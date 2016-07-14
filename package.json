@@ -1,0 +1,51 @@
+{
+  "name": "fly-rollup",
+  "version": "1.0.0",
+  "description": "Rollup plugin for Fly.",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/frantic1048/fly-rollup/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frantic1048/fly-rollup.git"
+  },
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "fly",
+    "fly-plugin",
+    "rollup"
+  ],
+  "scripts": {
+    "test": "node_modules/.bin/ava"
+  },
+  "author": {
+    "name": "frantic1048",
+    "email": "archer@frantic1048.com",
+    "url": "https://frantic1048.com"
+  },
+  "dependencies": {
+    "rollup": "^0.34.1"
+  },
+  "devDependencies": {
+    "ava": "^0.15.2",
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.0.1",
+    "eslint-config-standard": "^5.3.1",
+    "eslint-plugin-promise": "^1.3.2",
+    "eslint-plugin-standard": "^2.0.0",
+    "object-assign": "^4.1.0",
+    "rollup": "^0.34.1",
+    "rollup-plugin-babel": "^2.6.1"
+  },
+  "peerDependencies": {
+    "fly": "^1.3.1"
+  },
+  "engines": {
+    "iojs": ">= 1.0.0",
+    "node": ">= 0.12.0"
+  }
+}
