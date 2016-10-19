@@ -20,7 +20,7 @@
     "rollup"
   ],
   "scripts": {
-    "test": "node_modules/.bin/ava"
+    "test": "ava"
   },
   "author": {
     "name": "frantic1048",
