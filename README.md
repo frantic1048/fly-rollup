@@ -36,7 +36,7 @@ Async/Await flavored:
 ```js
 export async function roll () {
   await this
-    .source('src/engry.js') // just pass your entry file(s) here
+    .source('src/entry.js') // just pass your entry file(s) here
     .rollup({
       rollup: { // rollup options
         plugins: [
@@ -56,7 +56,7 @@ Generator function flavored:
 ```js
 exports.roll = function* () {
   yield this
-    .source('src/engry.js') // just pass your entry file(s) here
+    .source('src/entry.js') // just pass your entry file(s) here
     .rollup({
       rollup: { // rollup options
         plugins: [
