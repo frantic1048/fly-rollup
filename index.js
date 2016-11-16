@@ -1,29 +1,37 @@
-'use strict'
+'use strict';
 
-const path = require('path')
-const rollup = require('rollup')
+const format = require('path').format;
+const parse = require('path').parse;
+const rollup = require('rollup');
 
-module.exports = function flyRollup () {
-  return this.filter('rollup', function plugin (data, options) {
-    const rollupOpt = options.rollup
-    const bundleOpt = options.bundle
-    const fileOpt = options.file
-    rollupOpt.entry = path.resolve(path.join(fileOpt.dir, fileOpt.base))
-    return rollup.rollup(rollupOpt)
-      .then(function (bundle) {
-        const result = bundle.generate(bundleOpt)
-        const code = result.code.toString()
+module.exports = function () {
+  this.plugin('rollup', {every: 0}, function * (files, opts) {
+    opts = Object.assign({rollup: {}, bundle: {}}, opts);
+    const entry = opts.rollup.entry && parse(opts.rollup.entry);
 
-        let output = code
+    // prepare output
+    const out = [];
 
-        if (bundleOpt.sourceMap) {
-          const map = result.map.toString()
-          output += `\n//# sourceMappingURL=data:application/json;base64,${new Buffer(map).toString('base64')}`
-        }
-        return {
-          ext: '.js',
-          code: output
-        }
-      })
-  })
-}
+    // if `entry` point given, use that ONLY
+    for (const file of Array.from(entry || files)) {
+      opts.rollup.entry = format(file);
+
+      const bun = yield rollup.rollup(opts.rollup);
+      const res = bun.generate(opts.bundle);
+
+      file.data = res.code;
+
+      // append sourcemap, if one
+      if (opts.bundle.sourceMap && res.map) {
+        file.data += new Buffer('\n//# sourceMappingURL=data:application/json;base64,');
+        file.data += new Buffer(JSON.stringify(res.map).toString('base64'));
+      }
+
+      // send to output array
+      out.push(file);
+    }
+
+    // save changes
+    files = out;
+  });
+};
