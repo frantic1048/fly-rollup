@@ -7,7 +7,7 @@ const rollup = require('rollup');
 module.exports = function () {
   this.plugin('rollup', {every: 0}, function * (files, opts) {
     opts = Object.assign({rollup: {}, bundle: {}}, opts);
-    const entry = opts.rollup.entry && parse(opts.rollup.entry);
+    const entry = opts.rollup.entry && [parse(opts.rollup.entry)];
 
     // prepare output
     const out = [];
@@ -32,6 +32,6 @@ module.exports = function () {
     }
 
     // save changes
-    files = out;
+    this._.files = out;
   });
 };
