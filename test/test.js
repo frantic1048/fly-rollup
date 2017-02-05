@@ -1,7 +1,7 @@
 'use strict';
 
-const {join} = require('path');
-const {test} = require('tape');
+const join = require('path').join;
+const test = require('tape');
 const Fly = require('fly');
 
 const dir = join(__dirname, 'fixtures');

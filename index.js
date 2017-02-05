@@ -1,7 +1,8 @@
 'use strict';
 
-const {format, parse} = require('path');
-const {rollup} = require('rollup');
+const format = require('path').format
+const parse = require('path').parse
+const rollup = require('rollup');
 
 module.exports = function (fly) {
   fly.plugin('rollup', {every: 0}, function * (files, opts) {
@@ -15,7 +16,7 @@ module.exports = function (fly) {
     for (const file of Array.from(entry || files)) {
       opts.rollup.entry = format(file);
 
-      const bun = yield rollup(opts.rollup);
+      const bun = yield rollup.rollup(opts.rollup);
       const res = bun.generate(opts.bundle);
 
       file.data = res.code;
