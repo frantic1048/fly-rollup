@@ -26,7 +26,7 @@
 This plugin requires [Fly][] .
 
 ```bash
-npm i -D fly-rollup
+npm i --save-dev fly-rollup
 ```
 
 ## Usage
@@ -34,8 +34,8 @@ npm i -D fly-rollup
 Async/Await flavored:
 
 ```js
-export async function roll () {
-  await this
+export async function roll (fly) {
+  await fly
     .source('src/entry.js') // just pass your entry file(s) here
     .rollup({
       rollup: { // rollup options
@@ -54,8 +54,8 @@ export async function roll () {
 Generator function flavored:
 
 ```js
-exports.roll = function* () {
-  yield this
+exports.roll = function * (fly) {
+  yield fly
     .source('src/entry.js') // just pass your entry file(s) here
     .rollup({
       rollup: { // rollup options
