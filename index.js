@@ -1,7 +1,7 @@
 'use strict';
 
-const format = require('path').format
-const parse = require('path').parse
+const format = require('path').format;
+const parse = require('path').parse;
 const rollup = require('rollup');
 
 module.exports = function (fly) {
