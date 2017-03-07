@@ -7,7 +7,27 @@ const Fly = require('fly');
 const dir = join(__dirname, 'fixtures');
 const tmp = join(__dirname, 'tmp');
 
-const want = `var module = (function () {\n\'use strict\';\n\nvar a = function () {\n  return \'a\';\n};\n\nvar b = function () {\n  return \'b\';\n};\n\nvar entry = function () {\n  a();\n  b();\n};\n\nreturn entry;\n\n}());\n`;
+const want =
+`var module = (function () {
+'use strict';
+
+var a = function () {
+  return 'a';
+};
+
+var b = function () {
+  return 'b';
+};
+
+var entry = function () {
+  a();
+  b();
+};
+
+return entry;
+
+}());
+`;
 
 const opts = {
   rollup: {
@@ -21,14 +41,14 @@ const opts = {
 };
 
 test('fly-rollup', t => {
-  t.plan(8);
+  t.plan(14);
   const fly = new Fly({
     plugins: [
       require('../'),
       require('fly-clear')
     ],
     tasks: {
-      * foo(f) {
+      * basic(f) {
         yield f.source(`${dir}/entry.js`).rollup(opts).target(tmp);
 
         const res = yield f.$.read(`${tmp}/entry.js`, 'utf8');
@@ -37,7 +57,7 @@ test('fly-rollup', t => {
 
         yield f.clear(tmp);
       },
-      * bar(f) {
+      * explicitEntryOption(f) {
         opts.rollup.entry = `${dir}/entry.js`;
         yield f.source(`${dir}/*.foo`).rollup(opts).target(tmp);
 
@@ -47,19 +67,37 @@ test('fly-rollup', t => {
 
         yield f.clear(tmp);
       },
-      * baz(f) {
-        opts.bundle.sourceMap = true;
+      * inline(f) {
+        opts.bundle.sourceMap = 'inline';
         yield f.source(`${dir}/entry.js`).rollup(opts).target(tmp);
 
         const res = yield f.$.read(`${tmp}/entry.js`, 'utf8');
         t.ok(res, 'writes output file');
         t.true(res.indexOf(want) > -1, 'produces correct content');
-        t.true(res.indexOf('# sourceMappingURL=data:application/json;base64,{"version":3,') > -1, 'appends `sourceMappingURL` content');
+        t.true(res.indexOf('# sourceMappingURL=data:application/json;base64') > -1, 'appends `sourceMappingURL` content');
+
+        const base64Map = res.split('base64')[1];
+        const utf8Map = Buffer.from(base64Map, 'base64');
+        t.doesNotThrow(JSON.parse.bind(JSON, utf8Map), 'base64 encodes inline sourcemap');
+        t.equals(3, JSON.parse(utf8Map).version, 'sourcemap has correct content');
+
+        yield f.clear(tmp);
+      },
+      * external(f) {
+        opts.bundle.sourceMap = true;
+        yield f.source(`${dir}/entry.js`).rollup(opts).target(tmp);
+
+        const res = yield f.$.read(`${tmp}/entry.js`, 'utf8');
+        const map = yield f.$.read(`${tmp}/entry.js.map`, 'utf8');
+        t.ok(res, 'writes output file');
+        t.true(res.indexOf(want) > -1, 'produces correct content');
+        t.true(res.indexOf('# sourceMappingURL=entry.js.map') > -1, 'appends `sourceMappingURL`');
+        t.true(map.indexOf('{"version":3') === 0, 'writes external sourcemap');
 
         yield f.clear(tmp);
       }
     }
   });
   t.true('rollup' in fly.plugins, 'attach `rollup()` plugin to fly');
-  fly.serial(['foo', 'bar', 'baz']);
+  fly.serial(['basic', 'explicitEntryOption', 'inline', 'external']);
 });

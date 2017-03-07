@@ -23,8 +23,20 @@ module.exports = function (fly) {
 
       // append sourcemap, if one
       if (opts.bundle.sourceMap && res.map) {
-        file.data += new Buffer('\n//# sourceMappingURL=data:application/json;base64,');
-        file.data += new Buffer(JSON.stringify(res.map).toString('base64'));
+        if (opts.bundle.sourceMap === 'inline') {
+          // inline sourcemaps
+          file.data += '\n//# sourceMappingURL=data:application/json;base64,';
+          file.data += Buffer.from(JSON.stringify(res.map)).toString('base64');
+        } else {
+          // external sourcemaps
+          const map = file.base + '.map';
+          file.data += `\n//# sourceMappingURL=${map}`;
+          out.push({
+            base: map,
+            dir: file.dir,
+            data: Buffer.from(JSON.stringify(res.map))
+          });
+        }
       }
 
       // send to output array
