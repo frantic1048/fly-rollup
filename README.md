@@ -73,6 +73,28 @@ exports.roll = function * (fly) {
 
 You just need to pass **entry** files to fly-rollup .
 
+### Sourcemap
+
+Sourcemap is controlled by `sourceMap` key in bundle options. It has 3 options:
+
+- `true`: **default value**, generate external sourcemap along with bundle output.
+- `'inline'`: inline sourcemap.
+- `false`: disable sourcemap.
+
+
+e.g.
+
+```js
+fly.source
+  .rollup({
+    bundle: {
+      sourceMap: false // disable sourcemap
+    }
+  })
+```
+
+For other options:
+
 See [Rollup JavaScript API#rollup.rollup( options )][rollup-options] for *rollup options* .
 
 See [Rollup JavaScript API#bundle.generate( options )][bundle-options] for *bundle options* .
